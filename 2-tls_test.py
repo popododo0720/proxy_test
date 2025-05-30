@@ -21,7 +21,7 @@ sites = [
     "https://www.youtube.com",
     "https://www.facebook.com",
     "https://www.amazon.com",
-    "https://www.naver.com"
+    "https://www.cloudflare.com"
 ]
 
 def fetch_site(url):
