@@ -63,7 +63,8 @@ def run_concurrent_test(concurrency):
     time.sleep(2)
 
 print(f"TLS 프록시 성능 테스트 시작: {datetime.now()}")
-run_single_tests()
-for count in [10, 50, 100]:
+# run_single_tests()
+# for count in [10, 50, 100]:
+for count in [10000]:
     run_concurrent_test(count)
 print(f"TLS 프록시 성능 테스트 완료: {datetime.now()}")

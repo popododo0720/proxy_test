@@ -2,7 +2,7 @@ from datetime import datetime
 
 proxy_host = "192.168.0.40"
 proxy_port = "50000"
-concurrents = [50, 100, 200, 500]
+concurrents = [1000, 10000, 100000]
 
 def generate_jmx(concurrent_users):
     test_plan_name = f"jmeter_https_proxy_test_{concurrent_users}.jmx"

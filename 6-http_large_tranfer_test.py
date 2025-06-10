@@ -15,26 +15,50 @@ FILE_SIZE_MB = 100
 # 동시 다운로드 수
 concurrent_counts = [4, 10]
 
-def download_file(proxy_host, proxy_port, url, output_path):
+def download_file(url, output_path, proxy_host=None, proxy_port=None):
     try:
-        proxy = f"{proxy_host}:{proxy_port}"
+        cmd = ["curl", "-k", "-o", output_path, "-s", url]
+        if proxy_host and proxy_port:
+            proxy = f"{proxy_host}:{proxy_port}"
+            cmd.insert(1, "-x")
+            cmd.insert(2, proxy)
+
+        start_time = time.time()
         result = subprocess.run(
-            ["curl", "-x", proxy, "-k", "-o", output_path, "-s", url],
+            cmd,
             capture_output=True
         )
+        duration = time.time() - start_time
+
         if os.path.exists(output_path):
             size = round(os.path.getsize(output_path) / (1024 * 1024), 2)
-            return True, size
-        return False, 0
+            speed = round(size / duration, 2) if duration > 0 else 0
+            return True, size, duration, speed
+        return False, 0, duration, 0
     except Exception as e:
         print(f"❌ 오류: {e}")
-        return False, 0
+        return False, 0, 0, 0
+
+# 직접 다운로드 테스트 (프록시 없이)
+print(f"\n🌐 직접 다운로드 테스트 시작 (프록시 없음): {TEST_FILE_URL}")
+direct_file_name = f"direct_{FILE_NAME}"
+success, size, duration, speed = download_file(TEST_FILE_URL, direct_file_name)
+if success:
+    print(f"✅ 직접 다운로드 성공: {direct_file_name} ({size} MB)")
+    print(f"⏱️ 소요 시간: {duration:.2f}초")
+    print(f"📊 평균 처리량: {speed} MB/s")
+else:
+    print(f"❌ 직접 다운로드 실패: {direct_file_name}")
+try:
+    os.remove(direct_file_name)
+except:
+    pass
 
 # 단일 다운로드 테스트
 print(f"\n🌐 단일 HTTP 다운로드 시작: {TEST_FILE_URL}")
-success, size = download_file(PROXY_HOST, PROXY_PORT, TEST_FILE_URL, FILE_NAME)
+success, size, duration, speed = download_file(TEST_FILE_URL, FILE_NAME, PROXY_HOST, PROXY_PORT)
 if success:
-    print(f"✅ 다운로드 성공: {FILE_NAME} ({size} MB)")
+    print(f"✅ 프록시 다운로드 성공: {FILE_NAME} ({size} MB, {duration:.2f}초, {speed} MB/s)")
 else:
     print(f"❌ 다운로드 실패: {FILE_NAME}")
 
@@ -46,7 +70,7 @@ for count in concurrent_counts:
 
     with ThreadPoolExecutor(max_workers=count) as executor:
         futures = [
-            executor.submit(download_file, PROXY_HOST, PROXY_PORT, TEST_FILE_URL, f"{FILE_NAME}_{i}.tmp")
+            executor.submit(download_file, TEST_FILE_URL, f"{FILE_NAME}_{i}.tmp", PROXY_HOST, PROXY_PORT)
             for i in range(count)
         ]
         for future in as_completed(futures):

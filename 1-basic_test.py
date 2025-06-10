@@ -25,13 +25,13 @@ def test_proxy():
     except Exception as e:
         print(f"HTTP 테스트 실패: {e}")
 
-    # HTTPS 테스트
-    print("HTTPS 프록시 테스트 중...")
-    try:
-        response = requests.get("https://example.com", proxies=proxies, verify=False, timeout=5)
-        print(f"HTTPS 응답 상태 코드: {response.status_code}")
-    except Exception as e:
-        print(f"HTTPS 테스트 실패: {e}")
+    # # HTTPS 테스트
+    # print("HTTPS 프록시 테스트 중...")
+    # try:
+    #     response = requests.get("https://example.com", proxies=proxies, verify=False, timeout=5)
+    #     print(f"HTTPS 응답 상태 코드: {response.status_code}")
+    # except Exception as e:
+    #     print(f"HTTPS 테스트 실패: {e}")
 
     print(f"기본 테스트 완료: {datetime.datetime.now()}")
 

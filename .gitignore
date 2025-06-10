@@ -1,1 +1,6 @@
 venv/
+uproxy-test/
+jmeter_jmx/jmeter_https_proxy_test_*.jmx
+*.log
+*.crt
+*.pem
